@@ -1,15 +1,52 @@
-name: my-snap-name # you probably want to 'snapcraft register <name>'
-version: '0.1' # just for humans, typically '1.2+git' or '1.3.2'
-summary: Single-line elevator pitch for your amazing snap # 79 char long summary
+name: openra
+version: '20170527'
+summary: A Libre/Free Real Time Strategy game engine supporting early Westwood classics
 description: |
-  This is my-snap's description. You have a paragraph or two to tell the
-  most important story about your snap. Keep it under 100 words though,
-  we live in tweetspace and your description wants to look good in the snap
-  store.
+  Open Source real-time strategy game engine for early Westwood games
+  such as Command & Conquer: Red Alert written in C# using SDL and
+  OpenGL. Runs on Windows, Linux, *BSD and Mac OS X.
+icon: icons/openra-ra.svg
+confinement: strict
 
-confinement: devmode # use 'strict' once you have the right plugs and slots
+apps:
+  openra:
+    command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe
+    environment:
+      MONO_CFG_DIR: $SNAP/etc
+      MONO_CONFIG: $SNAP/etc/mono/config
+      MONO_GAC_PREFIX: $SNAP/usr/lib/mono
+    plugs:
+      - mount-observe
+      - network
+      - network-bind
+      - opengl
+      - optical-drive
+      - pulseaudio
+      - unity7
+      - x11
 
 parts:
-  my-part:
-    # See 'snapcraft plugins'
-    plugin: nil
+  openra:
+    plugin: make
+    source: https://github.com/OpenRA/OpenRA/archive/release-20170527.tar.gz
+    prepare: |
+      make dependencies
+    install: |
+      make DESTDIR=$SNAPCRAFT_PART_INSTALL install
+      make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
+    after: [desktop-glib-only]
+    build-packages:
+      - curl
+      - libfreetype6-dev
+      - liblua5.1-0-dev
+      - libopenal-dev
+      - libsdl2-dev
+      - mono-devel
+      - nuget
+      - unzip
+    stage-packages:
+      - libfreetype6
+      - liblua5.1-0
+      - libopenal1
+      - libsdl2-2.0-0
+      - mono-complete
