@@ -16,6 +16,18 @@ environment:
   MONO_GAC_PREFIX: $SNAP/usr/lib/mono
 
 apps:
+  openra:
+    command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe
+    plugs:
+      - desktop
+      - mount-observe
+      - network
+      - network-bind
+      - opengl
+      - pulseaudio
+      - removable-media
+      - wayland
+      - x11
   cnc:
     command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe Game.Mod=cnc
     desktop: usr/local/share/applications/openra-cnc.desktop
@@ -63,7 +75,7 @@ parts:
     prepare: |
       sed -i 's|^Icon=\(.*\)$|Icon=${SNAP}/usr/local/share/icons/hicolor/128x128/apps/\1.png|' packaging/linux/openra.desktop.in
       sed -i 's|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
-      make dependencies
+      env TRAVIS=1 make dependencies
     install: |
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
@@ -84,3 +96,4 @@ parts:
       - libsdl2-2.0-0
       - mono-complete
       - mount
+    build-attributes: [no-system-libraries]
