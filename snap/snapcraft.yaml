@@ -1,7 +1,7 @@
 name: openra
-version: '20171014'
+version: '20180307'
 summary: Libre/Free Real Time Strategy game engine supporting early Westwood classics
-description: |
+description: >
   Open Source real-time strategy game engine for early Westwood games
   such as Command & Conquer: Red Alert written in C# using SDL and
   OpenGL. Runs on Windows, Linux, *BSD and Mac OS X.
@@ -19,59 +19,77 @@ apps:
   openra:
     command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe
     plugs:
-      - desktop
-      - mount-observe
-      - network
-      - network-bind
-      - opengl
-      - pulseaudio
-      - removable-media
-      - wayland
-      - x11
+    - desktop
+    - mount-observe
+    - network
+    - network-bind
+    - opengl
+    - pulseaudio
+    - removable-media
+    - wayland
+    - x11
+
   cnc:
     command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe Game.Mod=cnc
     desktop: usr/local/share/applications/openra-cnc.desktop
     plugs:
-      - desktop
-      - mount-observe
-      - network
-      - network-bind
-      - opengl
-      - pulseaudio
-      - removable-media
-      - wayland
-      - x11
+    - desktop
+    - mount-observe
+    - network
+    - network-bind
+    - opengl
+    - pulseaudio
+    - removable-media
+    - wayland
+    - x11
+
   d2k:
     command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe Game.Mod=d2k
     desktop: usr/local/share/applications/openra-d2k.desktop
     plugs:
-      - desktop
-      - mount-observe
-      - network
-      - network-bind
-      - opengl
-      - pulseaudio
-      - removable-media
-      - wayland
-      - x11
+    - desktop
+    - mount-observe
+    - network
+    - network-bind
+    - opengl
+    - pulseaudio
+    - removable-media
+    - wayland
+    - x11
+
   ra:
     command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe Game.Mod=ra
     desktop: usr/local/share/applications/openra-ra.desktop
     plugs:
-      - desktop
-      - mount-observe
-      - network
-      - network-bind
-      - opengl
-      - pulseaudio
-      - removable-media
-      - wayland
-      - x11
+    - desktop
+    - mount-observe
+    - network
+    - network-bind
+    - opengl
+    - pulseaudio
+    - removable-media
+    - wayland
+    - x11
+
+  # Not Available yet  
+  # ts:
+  #   command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe Game.Mod=ts
+  #   desktop: usr/local/share/applications/openra-ts.desktop
+  #   plugs:
+  #   - desktop
+  #   - mount-observe
+  #   - network
+  #   - network-bind
+  #   - opengl
+  #   - pulseaudio
+  #   - removable-media
+  #   - wayland
+  #   - x11
 
 parts:
   openra:
     plugin: make
-    source: https://github.com/OpenRA/OpenRA/archive/release-20171014.tar.gz
+    source: https://github.com/OpenRA/OpenRA/archive/release-$SNAPCRAFT_PROJECT_VERSION.tar.gz
     prepare: |
       sed -i 's|^Icon=\(.*\)$|Icon=${SNAP}/usr/local/share/icons/hicolor/128x128/apps/\1.png|' packaging/linux/openra.desktop.in
       sed -i 's|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
@@ -81,19 +99,19 @@ parts:
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
     after: [desktop-glib-only]
     build-packages:
-      - curl
-      - libfreetype6-dev
-      - liblua5.1-0-dev
-      - libopenal-dev
-      - libsdl2-dev
-      - mono-devel
-      - nuget
-      - unzip
+    - curl
+    - libfreetype6-dev
+    - liblua5.1-0-dev
+    - libopenal-dev
+    - libsdl2-dev
+    - mono-devel
+    - nuget
+    - unzip
     stage-packages:
-      - libfreetype6
-      - liblua5.1-0
-      - libopenal1
-      - libsdl2-2.0-0
-      - mono-complete
-      - mount
+    - libfreetype6
+    - liblua5.1-0
+    - libopenal1
+    - libsdl2-2.0-0
+    - mono-complete
+    - mount
     build-attributes: [no-system-libraries]
