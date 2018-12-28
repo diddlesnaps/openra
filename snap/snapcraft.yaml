@@ -1,11 +1,10 @@
 name: openra
-version: '20180923'
+version: '20181215'
 summary: Libre/Free Real Time Strategy game engine supporting early Westwood classics
 description: >
   Open Source real-time strategy game engine for early Westwood games
   such as Command & Conquer: Red Alert written in C# using SDL and
   OpenGL. Runs on Windows, Linux, *BSD and Mac OS X.
-icon: icons/openra-ra.svg
 
 grade: stable
 confinement: strict
@@ -84,7 +83,7 @@ parts:
     organize:
       'mono-cert-import.sh': usr/bin/mono-cert-import
     prime:
-      - -openra-armhf-lua.patch
+      - usr/bin/mono-cert-import
 
   openra:
     after: [patches, desktop-glib-only]
