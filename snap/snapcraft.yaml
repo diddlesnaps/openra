@@ -1,5 +1,5 @@
 name: openra
-version: '20180307'
+version: '20190314'
 summary: Libre/Free Real Time Strategy game engine supporting early Westwood classics
 description: >
   Open Source real-time strategy game engine for early Westwood games
@@ -9,6 +9,7 @@ icon: icons/openra-ra.svg
 
 grade: stable
 confinement: strict
+base: core18
 
 architectures:
 - build-on: amd64
@@ -78,17 +79,20 @@ apps:
   #   - x11
 
 parts:
-  patches:
-    plugin: dump
-    source: patches
-    prime: [-*]
+  desktop-glib-only:
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    build-packages:
+      - libglib2.0-dev
+    stage-packages:
+      - libglib2.0-bin
 
   openra:
-    after: [patches, desktop-glib-only]
+    after: [desktop-glib-only]
     plugin: make
-    source: https://github.com/OpenRA/OpenRA/archive/release-$SNAPCRAFT_PROJECT_VERSION.tar.gz
+    source: https://github.com/OpenRA/OpenRA/releases/download/release-$SNAPCRAFT_PROJECT_VERSION/OpenRA-release-$SNAPCRAFT_PROJECT_VERSION-source.tar.bz2
     override-build: |
-      patch -Np1 < $SNAPCRAFT_STAGE/openra-armhf-lua.patch
       sed -i 's|^Icon=\(.*\)$|Icon=${SNAP}/usr/local/share/icons/hicolor/128x128/apps/\1.png|' packaging/linux/openra.desktop.in
       sed -i 's|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
@@ -114,4 +118,3 @@ parts:
     - libsdl2-2.0-0
     - mono-complete
     - mount
-    build-attributes: [no-system-libraries]
