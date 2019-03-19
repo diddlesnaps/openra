@@ -115,6 +115,7 @@ parts:
     build-packages:
     - curl
     - libfreetype6-dev
+    - libglu1-mesa-dev
     - liblua5.1-0-dev
     - libopenal-dev
     - libsdl2-dev
@@ -123,6 +124,7 @@ parts:
     - unzip
     stage-packages:
     - libfreetype6
+    - libglu1-mesa
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
