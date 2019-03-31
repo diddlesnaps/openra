@@ -89,13 +89,13 @@ parts:
     stage-packages:
       - libglib2.0-bin
 
-  # patches:
-  #   plugin: dump
-  #   source: patches
-  #   organize:
-  #     'mono-cert-import.sh': usr/bin/mono-cert-import
-  #   prime:
-  #     - usr/bin/mono-cert-import
+  patches:
+    plugin: dump
+    source: patches
+    organize:
+      'mono-cert-import.sh': usr/bin/mono-cert-import
+    prime:
+      - usr/bin/mono-cert-import
 
   openra:
     after: [desktop-glib-only]
@@ -105,7 +105,7 @@ parts:
       sed -i 's|^Icon=\(.*\)$|Icon=${SNAP}/usr/local/share/icons/hicolor/128x128/apps/\1.png|' packaging/linux/openra.desktop.in
       sed -i 's|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
-      # sed -i '2imono-cert-import' packaging/linux/openra.in
+      sed -i '2imono-cert-import' packaging/linux/openra.in
       env TRAVIS=1 make dependencies
 
       snapcraftctl build
