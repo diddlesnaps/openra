@@ -10,11 +10,21 @@ grade: stable
 confinement: strict
 base: core18
 
-# architectures:
-# - build-on: amd64
-# - build-on: i386
-# - build-on: armhf
-# - build-on: arm64
+architectures:
+- build-on: amd64
+- build-on: i386
+- build-on: armhf
+- build-on: arm64
+- build-on: ppc64
+
+layout:
+  /usr/share/.mono:
+    bind: $SNAP_COMMON/.mono
+
+hooks:
+  configure:
+    plugs:
+      - network
 
 environment:
   MONO_CFG_DIR: $SNAP/etc
