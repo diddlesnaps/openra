@@ -99,28 +99,24 @@ parts:
     stage-packages:
       - libglib2.0-bin
 
-  # patches:
-  #   plugin: dump
-  #   source: patches
-  #   organize:
-  #     'mono-cert-import.sh': usr/bin/mono-cert-import
-  #   prime:
-  #     - usr/bin/mono-cert-import
+  mono:
+    plugin: nil
+    source: .
+    override-pull: |
+      apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+      echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list
+      apt update && apt -yqq install mono-devel
 
   openra:
-    after: [desktop-glib-only]
+    after: [desktop-glib-only, mono]
     plugin: make
     source: https://github.com/OpenRA/OpenRA/releases/download/release-$SNAPCRAFT_PROJECT_VERSION/OpenRA-release-$SNAPCRAFT_PROJECT_VERSION-source.tar.bz2
+    #source: https://github.com/OpenRA/OpenRA.git
     override-build: |
-      sed -i 's|^Icon=\(.*\)$|Icon=${SNAP}/usr/local/share/icons/hicolor/128x128/apps/\1.png|' packaging/linux/openra.desktop.in
-      sed -i 's|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
+      sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
-      # sed -i '2imono-cert-import' packaging/linux/openra.in
       env TRAVIS=1 make dependencies
-
       snapcraftctl build
-
-      make DESTDIR=$SNAPCRAFT_PART_INSTALL install
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
     build-packages:
     - curl
@@ -133,11 +129,12 @@ parts:
     - nuget
     - unzip
     stage-packages:
+    - ca-certificates-mono
     - libfreetype6
     - libglu1-mesa
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
-    - mono-complete
+    - mono-runtime
     - mount
     - wget
