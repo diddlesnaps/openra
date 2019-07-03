@@ -95,6 +95,7 @@ parts:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: glib-only
     build-packages:
+      - gnupg
       - libglib2.0-dev
     stage-packages:
       - libglib2.0-bin
