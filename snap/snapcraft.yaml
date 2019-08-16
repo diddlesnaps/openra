@@ -76,7 +76,7 @@ apps:
 
   # Not Available yet  
   # ts:
-  #   command: desktop-launch $SNAP/usr/bin/mono-sgen $SNAP/usr/local/lib/openra/OpenRA.Game.exe Game.Mod=ts
+  #   command: desktop-launch $SNAP/usr/local/bin/openra-ts
   #   desktop: usr/local/share/applications/openra-ts.desktop
   #   plugs:
   #   - desktop
@@ -106,7 +106,7 @@ parts:
     override-pull: |
       apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
       echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list
-      apt update && apt -yqq install mono-devel
+      apt update && apt -yqq upgrade
 
   openra:
     after: [desktop-glib-only, mono]
@@ -117,7 +117,8 @@ parts:
       sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
       env TRAVIS=1 make dependencies
-      snapcraftctl build
+      env PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin make
+      make DESTDIR=$SNAPCRAFT_PART_INSTALL install
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
     build-packages:
     - curl
@@ -136,6 +137,6 @@ parts:
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
-    - mono-runtime
+    - mono-complete
     - mount
     - wget
