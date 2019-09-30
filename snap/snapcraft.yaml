@@ -36,6 +36,7 @@ apps:
     command: desktop-launch $SNAP/usr/local/bin/openra-cnc
     desktop: usr/local/share/applications/openra-cnc.desktop
     plugs:
+    - audio-playback
     - desktop
     - mount-observe
     - network
@@ -50,6 +51,7 @@ apps:
     command: desktop-launch $SNAP/usr/local/bin/openra-d2k
     desktop: usr/local/share/applications/openra-d2k.desktop
     plugs:
+    - audio-playback
     - desktop
     - mount-observe
     - network
@@ -64,6 +66,7 @@ apps:
     command: desktop-launch $SNAP/usr/local/bin/openra-ra
     desktop: usr/local/share/applications/openra-ra.desktop
     plugs:
+    - audio-playback
     - desktop
     - mount-observe
     - network
@@ -79,6 +82,7 @@ apps:
   #   command: desktop-launch $SNAP/usr/local/bin/openra-ts
   #   desktop: usr/local/share/applications/openra-ts.desktop
   #   plugs:
+  #   - audio-playback
   #   - desktop
   #   - mount-observe
   #   - network
