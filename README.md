@@ -29,7 +29,7 @@ starting the game to allow it to access the CDROM/DVD drive.
 
 ([Don't have snapd installed?](https://snapcraft.io/docs/core/install))
 
-<p align="center">Published for <img src="http://anything.codes/slack-emoji-for-techies/emoji/tux.png" align="top" width="24" /> with :gift_heart: by Snapcrafters</p>
+<p align="center">Published for <img src="https://raw.githubusercontent.com/anythingcodes/slack-emoji-for-techies/gh-pages/emoji/tux.png" align="top" width="24" /> with :gift_heart: by Snapcrafters</p>
 
 ## Starting the game
 
