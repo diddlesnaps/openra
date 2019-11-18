@@ -37,6 +37,8 @@ apps:
     desktop: usr/local/share/applications/openra-cnc.desktop
     plugs:
     - audio-playback
+    - avahi-control
+    - avahi-observe
     - desktop
     - mount-observe
     - network
@@ -52,6 +54,8 @@ apps:
     desktop: usr/local/share/applications/openra-d2k.desktop
     plugs:
     - audio-playback
+    - avahi-control
+    - avahi-observe
     - desktop
     - mount-observe
     - network
@@ -67,6 +71,8 @@ apps:
     desktop: usr/local/share/applications/openra-ra.desktop
     plugs:
     - audio-playback
+    - avahi-control
+    - avahi-observe
     - desktop
     - mount-observe
     - network
@@ -83,6 +89,8 @@ apps:
   #   desktop: usr/local/share/applications/openra-ts.desktop
   #   plugs:
   #   - audio-playback
+  #   - avahi-control
+  #   - avahi-observe
   #   - desktop
   #   - mount-observe
   #   - network
