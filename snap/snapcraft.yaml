@@ -117,9 +117,11 @@ parts:
     plugin: make
     source: https://github.com/OpenRA/OpenRA/releases/download/release-$SNAPCRAFT_PROJECT_VERSION/OpenRA-release-$SNAPCRAFT_PROJECT_VERSION-source.tar.bz2
     #source: https://github.com/OpenRA/OpenRA.git
-    override-build: |
+    override-pull: |
+      snapcraftctl pull
       sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
+    override-build: |
       env TRAVIS=1 make dependencies
       env PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin make
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install
@@ -131,7 +133,7 @@ parts:
     - liblua5.1-0-dev
     - libopenal-dev
     - libsdl2-dev
-    - mono-devel
+    - mono-complete
     - nuget
     - unzip
     stage-packages:
