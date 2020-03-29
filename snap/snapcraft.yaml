@@ -1,11 +1,10 @@
 name: openra
-version: '20200202'
 summary: Libre/Free Real Time Strategy game engine supporting early Westwood classics
 description: >
   Open Source real-time strategy game engine for early Westwood games
   such as Command & Conquer: Red Alert written in C# using SDL and
   OpenGL. Runs on Windows, Linux, *BSD and Mac OS X.
-
+adopt-info: openra
 grade: stable
 confinement: strict
 base: core18
@@ -15,7 +14,7 @@ architectures:
 - build-on: i386
 - build-on: armhf
 - build-on: arm64
-- build-on: ppc64
+- build-on: ppc64el
 
 layout:
   /usr/share/.mono:
@@ -125,10 +124,25 @@ parts:
     plugin: make
     source: https://github.com/OpenRA/OpenRA/releases/download/release-$SNAPCRAFT_PROJECT_VERSION/OpenRA-release-$SNAPCRAFT_PROJECT_VERSION-source.tar.bz2
     #source: https://github.com/OpenRA/OpenRA.git
+    build-snaps: [jq]
     override-pull: |
-      snapcraftctl pull
+      if [ -f "$SNAPCRAFT_PROJECT_DIR"/build-type ]; then
+        . "$SNAPCRAFT_PROJECT_DIR"/build-type
+      else
+        PLAYTEST=false
+      fi
+      curl -o api.txt https://api.github.com/repos/OpenRA/OpenRA/releases
+
+      JQ_SCRIPT='[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0]'
+      VERSION=$(cat api.txt | jq "$JQ_SCRIPT"' | .tag_name')
+      URL=$(cat api.txt | jq "$JQ_SCRIPT"' | .assets | map(select(.content_type == "application/x-bzip2")) | .[0] | .browser_download_url')
+
+      curl -L "$(echo "$URL" | sed -e 's/"//g')" | tar jx
+
       sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
+
+      snapcraftctl set-version "$(echo "$VERSION" | sed -e 's/"//g')"
     override-build: |
       env TRAVIS=1 make dependencies
       env PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin make
