@@ -2,3 +2,5 @@
 parts
 stage
 prime
+build-type
+*.snap

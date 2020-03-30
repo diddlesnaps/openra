@@ -1,0 +1,49 @@
+name: Build and Release Snap
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-stable:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        echo PLAYTEST=false > build-type
+    - uses: diddlesnaps/snapcraft-build-action@remote-builds
+      id: build
+      with:
+        use_launchpad: true
+        launchpad_accept_public_upload: true
+    # - uses: diddlesnaps/snapcraft-review-tools-action@v1
+    #   with:
+    #     snap: ${{ steps.build.outputs.snap }}
+    #     isClassic: 'false'
+    - uses: diddlesnaps/snapcraft-publish-action@multiple-snaps
+      with:
+        store_login: ${{ secrets.STORE_LOGIN }}
+        snap: ${{ steps.build.outputs.snap }}
+        release: beta
+
+  build-playtest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        echo PLAYTEST=true > build-type
+    - uses: diddlesnaps/snapcraft-build-action@remote-builds
+      id: build
+      with:
+        use_launchpad: true
+        launchpad_accept_public_upload: true
+    # - uses: diddlesnaps/snapcraft-review-tools-action@v1
+    #   with:
+    #     snap: ${{ steps.build.outputs.snap }}
+    #     isClassic: 'false'
+    - uses: diddlesnaps/snapcraft-publish-action@multiple-snaps
+      with:
+        store_login: ${{ secrets.STORE_LOGIN }}
+        snap: ${{ steps.build.outputs.snap }}
+        release: edge
