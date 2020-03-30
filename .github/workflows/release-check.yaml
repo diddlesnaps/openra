@@ -14,7 +14,7 @@ jobs:
       run: |
         VERSION="$(curl https://api.github.com/repos/OpenRA/OpenRA/releases | jq '.[0] | .tag_name' | sed -e 's/"//g')"
         EDGEVER="$(snap info openra | awk '$1 == "edge:" { print $2 }')"
-        BETAVER="$(snap info openra | ark '$1 == "beta:" { print $2 }')"
+        BETAVER="$(snap info openra | awk '$1 == "beta:" { print $2 }')"
 
         if [ "$VERSION" != "$EDGEVER" ] && [ "$VERSION" != "$BETAVER" ]; then
           echo "$(date -u --rfc-3339=seconds) Version $VERSION" >> .build.stamp
