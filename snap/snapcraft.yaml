@@ -165,6 +165,6 @@ parts:
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
-    - mono-runtime
+    - mono-complete
     - mount
     - wget
