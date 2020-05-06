@@ -13,10 +13,9 @@ jobs:
     - name: get-latest-version
       run: |
         VERSION="$(curl https://api.github.com/repos/OpenRA/OpenRA/releases | jq '.[0] | .tag_name' | sed -e 's/"//g')"
-        EDGEVER="$(snap info openra | awk '$1 == "edge:" { print $2 }')"
-        BETAVER="$(snap info openra | awk '$1 == "beta:" { print $2 }')"
+        last=$(tail -n1 | awk '{print $4}')
 
-        if [ "$VERSION" != "$EDGEVER" ] && [ "$VERSION" != "$BETAVER" ]; then
+        if [ "$last" != "$VERSION" ]; then
           echo "$(date -u --rfc-3339=seconds) Version $VERSION" >> .build.stamp
         fi
     - uses: stefanzweifel/git-auto-commit-action@v2.1.0
