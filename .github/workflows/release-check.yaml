@@ -13,7 +13,7 @@ jobs:
     - name: get-latest-version
       run: |
         VERSION="$(curl https://api.github.com/repos/OpenRA/OpenRA/releases | jq '.[0] | .tag_name' | sed -e 's/"//g')"
-        last=$(tail -n1 | awk '{print $4}')
+        last=$(tail -n1 .build.stamp | awk '{print $4}')
 
         if [ "$last" != "$VERSION" ]; then
           echo "$(date -u --rfc-3339=seconds) Version $VERSION" >> .build.stamp
