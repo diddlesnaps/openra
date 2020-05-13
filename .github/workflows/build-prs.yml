@@ -8,8 +8,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: jhenstridge/snapcraft-build-action@v1
-      id: build
+    strategy:
+      matrix:
+        architecture:
+        - linux/amd64
+        - linux/386
+        - linux/arm64
+        - linux/arm/v7
+        - linux/ppc64le
+        playtest:
+        - 'true'
+        - 'false'
+    steps:
+    - uses: actions/checkout@v2
+    - uses: crazy-max/ghaction-docker-buildx@v1
+    - run: |
+        docker buildx build \
+          --build-arg PLAYTEST="${{ matrix.playtest }}" \
+          --platform "${{ matrix.architecture }}" \
+          --output type=local,dest=$GITHUB_WORKSPACE
+
+        echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1')
     - uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
         snap: ${{ steps.build.outputs.snap }}
+        isClassic: 'false'
+    - uses: snapcore/action-publish@v1

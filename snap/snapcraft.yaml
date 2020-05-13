@@ -124,7 +124,6 @@ parts:
     plugin: make
     source: https://github.com/OpenRA/OpenRA/releases/download/release-$SNAPCRAFT_PROJECT_VERSION/OpenRA-release-$SNAPCRAFT_PROJECT_VERSION-source.tar.bz2
     #source: https://github.com/OpenRA/OpenRA.git
-    build-snaps: [jq]
     override-pull: |
       if [ -f "$SNAPCRAFT_PROJECT_DIR"/build-type ]; then
         . "$SNAPCRAFT_PROJECT_DIR"/build-type
@@ -150,6 +149,7 @@ parts:
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
     build-packages:
     - curl
+    - jq
     - libfreetype6-dev
     - libglu1-mesa-dev
     - liblua5.1-0-dev

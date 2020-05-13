@@ -3,25 +3,34 @@ name: Build and Release Snap
 on:
   push:
     branches:
-      - master
+    - master
 
 jobs:
   build-stable:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture:
+        - linux/amd64
+        - linux/386
+        - linux/arm64
+        - linux/arm/v7
+        - linux/ppc64le
     steps:
     - uses: actions/checkout@v2
+    - uses: crazy-max/ghaction-docker-buildx@v1
     - run: |
-        echo PLAYTEST=false > build-type
-    - uses: diddlesnaps/snapcraft-build-action@remote-builds
-      id: build
+        docker buildx build \
+          --build-arg PLAYTEST=false \
+          --platform "${{ matrix.architecture }}" \
+          --output type=local,dest=$GITHUB_WORKSPACE
+
+        echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1')
+    - uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
-        use_launchpad: true
-        launchpad_accept_public_upload: true
-    # - uses: diddlesnaps/snapcraft-review-tools-action@v1
-    #   with:
-    #     snap: ${{ steps.build.outputs.snap }}
-    #     isClassic: 'false'
-    - uses: diddlesnaps/snapcraft-publish-action@multiple-snaps
+        snap: ${{ steps.build.outputs.snap }}
+        isClassic: 'false'
+    - uses: snapcore/action-publish@v1
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
@@ -29,19 +38,29 @@ jobs:
 
   build-playtest:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture:
+        - linux/amd64
+        - linux/386
+        - linux/arm64
+        - linux/arm/v7
+        - linux/ppc64le
     steps:
     - uses: actions/checkout@v2
+    - uses: crazy-max/ghaction-docker-buildx@v1
     - run: |
-        echo PLAYTEST=true > build-type
-    - uses: diddlesnaps/snapcraft-build-action@remote-builds
-      id: build
+        docker buildx build \
+          --build-arg PLAYTEST=true \
+          --platform "${{ matrix.architecture }}" \
+          --output type=local,dest=$GITHUB_WORKSPACE
+
+        echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1')
+    - uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
-        use_launchpad: true
-        launchpad_accept_public_upload: true
-    # - uses: diddlesnaps/snapcraft-review-tools-action@v1
-    #   with:
-    #     snap: ${{ steps.build.outputs.snap }}
-    #     isClassic: 'false'
+        snap: ${{ steps.build.outputs.snap }}
+        isClassic: 'false'
+    - uses: snapcore/action-publish@v1
     - uses: diddlesnaps/snapcraft-publish-action@multiple-snaps
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
