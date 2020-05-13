@@ -18,7 +18,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: crazy-max/ghaction-docker-buildx@v1
-    - run: |
+    - id: build
+      run: |
         docker buildx build \
           --build-arg PLAYTEST=false \
           --platform "${{ matrix.architecture }}" \
@@ -47,7 +48,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: crazy-max/ghaction-docker-buildx@v1
-    - run: |
+    - id: build
+      run: |
         docker buildx build \
           --build-arg PLAYTEST=true \
           --platform "${{ matrix.architecture }}" \
