@@ -23,7 +23,7 @@ jobs:
         docker buildx build \
           --build-arg PLAYTEST=false \
           --platform "${{ matrix.architecture }}" \
-          --output type=local,dest=$GITHUB_WORKSPACE
+          --output type=local,dest=$GITHUB_WORKSPACE .
 
         echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1')
     - uses: diddlesnaps/snapcraft-review-tools-action@v1
@@ -53,7 +53,7 @@ jobs:
         docker buildx build \
           --build-arg PLAYTEST=true \
           --platform "${{ matrix.architecture }}" \
-          --output type=local,dest=$GITHUB_WORKSPACE
+          --output type=local,dest=$GITHUB_WORKSPACE .
 
         echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1')
     - uses: diddlesnaps/snapcraft-review-tools-action@v1
