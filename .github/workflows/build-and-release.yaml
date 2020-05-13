@@ -15,7 +15,6 @@ jobs:
         - linux/386
         - linux/arm64
         - linux/arm/v7
-        - linux/ppc64le
     steps:
     - uses: actions/checkout@v2
     - uses: crazy-max/ghaction-docker-buildx@v1
@@ -45,7 +44,6 @@ jobs:
         - linux/386
         - linux/arm64
         - linux/arm/v7
-        - linux/ppc64le
     steps:
     - uses: actions/checkout@v2
     - uses: crazy-max/ghaction-docker-buildx@v1
