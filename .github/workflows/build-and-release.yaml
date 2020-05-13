@@ -61,7 +61,6 @@ jobs:
         snap: ${{ steps.build.outputs.snap }}
         isClassic: 'false'
     - uses: snapcore/action-publish@v1
-    - uses: diddlesnaps/snapcraft-publish-action@multiple-snaps
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
