@@ -17,14 +17,17 @@ jobs:
         - linux/arm/v7
     steps:
     - uses: actions/checkout@v2
-    - uses: crazy-max/ghaction-docker-buildx@v1
-    - id: build
-      run: |
-        docker buildx build \
-          --build-arg PLAYTEST=false \
+    - run: |
+        echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json > /dev/null
+        sudo systemctl restart docker
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+        docker run --rm --tty --privileged \
+          --volume $GITHUB_WORKSPACE:$GITHUB_WORKSPACE \
+          --workdir $GITHUB_WORKSPACE \
           --platform "${{ matrix.architecture }}" \
-          --output type=local,dest=$GITHUB_WORKSPACE .
-
+          --env PLAYTEST="${{ matrix.playtest }}" \
+          diddledan/snapcraft:core18
+        
         echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1)
     - uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
@@ -47,14 +50,17 @@ jobs:
         - linux/arm/v7
     steps:
     - uses: actions/checkout@v2
-    - uses: crazy-max/ghaction-docker-buildx@v1
-    - id: build
-      run: |
-        docker buildx build \
-          --build-arg PLAYTEST=true \
+    - run: |
+        echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json > /dev/null
+        sudo systemctl restart docker
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+        docker run --rm --tty --privileged \
+          --volume $GITHUB_WORKSPACE:$GITHUB_WORKSPACE \
+          --workdir $GITHUB_WORKSPACE \
           --platform "${{ matrix.architecture }}" \
-          --output type=local,dest=$GITHUB_WORKSPACE .
-
+          --env PLAYTEST="${{ matrix.playtest }}" \
+          diddledan/snapcraft:core18
+        
         echo ::set-output name=snap::$(find $GITHUB_WORKSPACE -type f -name "*.snap" | head -n1)
     - uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
