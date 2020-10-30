@@ -21,17 +21,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
     - name: Build
       id: build
       run: |
         echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json > /dev/null
         sudo systemctl restart docker
-        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         docker run --rm --tty --privileged \
           --volume "$GITHUB_WORKSPACE":"$GITHUB_WORKSPACE" \
           --workdir "$GITHUB_WORKSPACE" \
           --platform "${{ matrix.architecture }}" \
-          diddledan/snapcraft:core18 env PLAYTEST="${{matrix.playtest}"} snapcraft
+          diddledan/snapcraft:core18 env PLAYTEST="${{matrix.playtest}}" snapcraft
 
           SNAPFILE="$(find "$GITHUB_WORKSPACE" -maxdepth 1 -type f -name "*.snap" | head -n1)"
           sudo chown "$(id -u)":"$(id -g)" "$SNAPFILE"
