@@ -111,7 +111,6 @@ parts:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: glib-only
     build-packages:
-      - gnupg
       - libglib2.0-dev
     stage-packages:
       - libglib2.0-bin
@@ -123,12 +122,20 @@ parts:
       apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
       echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list
       apt update && apt -yqq upgrade
+    build-packages:
+      - gnupg
 
   openra:
     after: [desktop-glib-only, mono]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
+    build-environment:
+    - MONO_CFG_DIR: $SNAPCRAFT_PART_INSTALL/etc
+    - MONO_CONFIG: $SNAPCRAFT_PART_INSTALL/etc/mono/config
+    - MONO_GAC_PREFIX: $SNAPCRAFT_PART_INSTALL/usr/lib/mono
     override-pull: |
+      snapcraftctl pull
+
       if [ -f "$SNAPCRAFT_PROJECT_DIR"/build-type ]; then
         . "$SNAPCRAFT_PROJECT_DIR"/build-type
       else
@@ -136,8 +143,6 @@ parts:
       fi
 
       VERSION="$(curl -L -s https://api.github.com/repos/OpenRA/OpenRA/releases | jq '[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0] | .tag_name' | sed -e 's/"//g')"
-      
-      snapcraftctl pull
       git checkout "$VERSION"
       snapcraftctl set-version "$VERSION"
 
@@ -163,10 +168,11 @@ parts:
     stage-packages:
     - ca-certificates-mono
     - libfreetype6
+    - libgdiplus
     - libglu1-mesa
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
-    - mono-complete
+    - mono-runtime
     - mount
     - wget
