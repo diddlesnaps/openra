@@ -22,7 +22,10 @@ layout:
     bind: $SNAP_COMMON/.mono
 
 hooks:
-  configure:
+  install:
+    plugs:
+      - network
+  post-refresh:
     plugs:
       - network
 
