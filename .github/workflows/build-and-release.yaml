@@ -45,6 +45,7 @@ jobs:
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
       if: matrix.playtest == 'true'
+      continue-on-error: true
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}

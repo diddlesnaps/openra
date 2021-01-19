@@ -33,7 +33,8 @@ environment:
 
 apps:
   cnc:
-    command: desktop-launch $SNAP/usr/local/bin/openra-cnc
+    command: usr/local/bin/openra-cnc
+    command-chain: [bin/desktop-launch]
     desktop: usr/local/share/applications/openra-cnc.desktop
     plugs:
     - audio-playback
@@ -50,7 +51,8 @@ apps:
     - x11
 
   d2k:
-    command: desktop-launch $SNAP/usr/local/bin/openra-d2k
+    command: usr/local/bin/openra-d2k
+    command-chain: [bin/desktop-launch]
     desktop: usr/local/share/applications/openra-d2k.desktop
     plugs:
     - audio-playback
@@ -67,7 +69,8 @@ apps:
     - x11
 
   ra:
-    command: desktop-launch $SNAP/usr/local/bin/openra-ra
+    command: usr/local/bin/openra-ra
+    command-chain: [bin/desktop-launch]
     desktop: usr/local/share/applications/openra-ra.desktop
     plugs:
     - audio-playback
@@ -85,7 +88,8 @@ apps:
 
   # Not Available yet  
   # ts:
-  #   command: desktop-launch $SNAP/usr/local/bin/openra-ts
+  #   command: usr/local/bin/openra-ts
+  #   command-chain: [bin/desktop-launch]
   #   desktop: usr/local/share/applications/openra-ts.desktop
   #   plugs:
   #   - audio-playback
@@ -123,31 +127,28 @@ parts:
   openra:
     after: [desktop-glib-only, mono]
     plugin: make
-    source: https://github.com/OpenRA/OpenRA/releases/download/release-$SNAPCRAFT_PROJECT_VERSION/OpenRA-release-$SNAPCRAFT_PROJECT_VERSION-source.tar.bz2
-    #source: https://github.com/OpenRA/OpenRA.git
+    source: https://github.com/OpenRA/OpenRA.git
     override-pull: |
       if [ -f "$SNAPCRAFT_PROJECT_DIR"/build-type ]; then
         . "$SNAPCRAFT_PROJECT_DIR"/build-type
       else
         PLAYTEST=false
       fi
-      curl -o api.txt https://api.github.com/repos/OpenRA/OpenRA/releases
 
-      JQ_SCRIPT='[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0]'
-      VERSION=$(cat api.txt | jq "$JQ_SCRIPT"' | .tag_name')
-      URL=$(cat api.txt | jq "$JQ_SCRIPT"' | .assets | map(select(.content_type == "application/x-bzip2")) | .[0] | .browser_download_url')
-
-      curl -L "$(echo "$URL" | sed -e 's/"//g')" | tar jx
+      VERSION="$(curl -L -s https://api.github.com/repos/OpenRA/OpenRA/releases | jq '[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0] | .tag_name' | sed -e 's/"//g')"
+      
+      snapcraftctl pull
+      git checkout "$VERSION"
+      snapcraftctl set-version "$VERSION"
 
       sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
-
-      snapcraftctl set-version "$(echo "$VERSION" | sed -e 's/"//g')"
     override-build: |
-      env TRAVIS=1 make dependencies
-      env PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin make
+      make version
+      make all
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install
       make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
+      make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-appdata
     build-packages:
     - curl
     - jq
