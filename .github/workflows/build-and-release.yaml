@@ -17,8 +17,8 @@ jobs:
         - arm64
         - armhf
         playtest:
-        - 'true'
-        - 'false'
+        - true
+        - false
     continue-on-error: ${{ matrix.playtest }}
     steps:
     - name: Checkout
@@ -39,14 +39,14 @@ jobs:
         isClassic: 'false'
     - name: Publish release to Beta
       uses: snapcore/action-publish@v1
-      if: matrix.playtest == 'false'
+      if: matrix.playtest == false
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
         release: beta
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
-      if: matrix.playtest == 'true'
+      if: matrix.playtest == true
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
