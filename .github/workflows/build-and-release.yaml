@@ -17,8 +17,8 @@ jobs:
         - arm64
         - armhf
         playtest:
-        - true
-        - false
+        - 'true'
+        - 'false'
     continue-on-error: ${{ matrix.playtest }}
     steps:
     - name: Checkout
