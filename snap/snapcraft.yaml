@@ -108,6 +108,14 @@ apps:
   #   - wayland
   #   - x11
 
+package-repositories:
+  - type: apt
+    formats: [deb]
+    components: [main]
+    suites: [stable-bionic]
+    key-id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+    url: https://download.mono-project.com/repo/ubuntu
+
 parts:
   desktop-glib-only:
     plugin: make
@@ -118,18 +126,8 @@ parts:
     stage-packages:
       - libglib2.0-bin
 
-  mono:
-    plugin: nil
-    source: .
-    override-pull: |
-      apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-      echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list
-      apt update && apt -yqq upgrade
-    build-packages:
-      - gnupg
-
   openra:
-    after: [desktop-glib-only, mono]
+    after: [desktop-glib-only]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
     build-environment:
@@ -176,6 +174,6 @@ parts:
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
-    - mono-runtime
+    - mono-devel
     - mount
     - wget
