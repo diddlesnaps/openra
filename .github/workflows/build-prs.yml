@@ -12,6 +12,8 @@ jobs:
         - amd64
         - i386
         - armhf
+        - arm64
+        - ppc64el
         playtest:
         - 'true'
         - 'false'
