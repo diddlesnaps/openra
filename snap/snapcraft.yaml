@@ -171,6 +171,7 @@ parts:
     - libfreetype6
     - libgdiplus
     - libglu1-mesa
+    - liblttng-ust0
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
