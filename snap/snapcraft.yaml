@@ -143,7 +143,7 @@ parts:
         PLAYTEST=false
       fi
 
-      VERSION="$(curl -L -s https://api.github.com/repos/OpenRA/OpenRA/releases | jq '[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0] | .tag_name' | sed -e 's/"//g')"
+      VERSION="$(curl -L -s https://api.github.com/repos/OpenRA/OpenRA/releases | jq -r '[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0] | .tag_name')"
       git checkout "$VERSION"
       snapcraftctl set-version "$VERSION"
 
