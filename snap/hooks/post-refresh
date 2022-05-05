@@ -1,3 +1,0 @@
-#!/bin/sh
-
-$SNAP/usr/bin/mono $SNAP/usr/lib/mono/4.5/cert-sync.exe /etc/ssl/certs/ca-certificates.crt

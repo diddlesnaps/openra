@@ -7,19 +7,13 @@ description: >
 adopt-info: openra
 grade: stable
 confinement: strict
-base: core18
+base: core20
 compression: lzo
 
 architectures:
 - build-on: amd64
-- build-on: i386
 - build-on: armhf
 - build-on: arm64
-- build-on: ppc64el
-
-layout:
-  /usr/share/.mono:
-    bind: $SNAP_COMMON/.mono
 
 hooks:
   install:
@@ -28,11 +22,6 @@ hooks:
   post-refresh:
     plugs:
       - network
-
-environment:
-  MONO_CFG_DIR: $SNAP/etc
-  MONO_CONFIG: $SNAP/etc/mono/config
-  MONO_GAC_PREFIX: $SNAP/usr/lib/mono
 
 apps:
   cnc:
@@ -108,14 +97,6 @@ apps:
   #   - wayland
   #   - x11
 
-package-repositories:
-  - type: apt
-    formats: [deb]
-    components: [main]
-    suites: [stable-bionic]
-    key-id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-    url: https://download.mono-project.com/repo/ubuntu
-
 parts:
   desktop-glib-only:
     plugin: make
@@ -130,10 +111,6 @@ parts:
     after: [desktop-glib-only]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
-    build-environment:
-    - MONO_CFG_DIR: $SNAPCRAFT_PART_INSTALL/etc
-    - MONO_CONFIG: $SNAPCRAFT_PART_INSTALL/etc/mono/config
-    - MONO_GAC_PREFIX: $SNAPCRAFT_PART_INSTALL/usr/lib/mono
     override-pull: |
       snapcraftctl pull
 
@@ -144,17 +121,19 @@ parts:
       fi
 
       VERSION="$(curl -L -s https://api.github.com/repos/OpenRA/OpenRA/releases | jq -r '[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0] | .tag_name')"
-      git checkout "$VERSION"
-      snapcraftctl set-version "$VERSION"
+      # git checkout "$VERSION"
+      # snapcraftctl set-version "$VERSION"
+      snapcraftctl set-version main
 
       sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
     override-build: |
       make version
-      make all
-      make DESTDIR=$SNAPCRAFT_PART_INSTALL install
-      make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
-      make DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-appdata
+      make RUNTIME=net5 all
+      make RUNTIME=net5 DESTDIR=$SNAPCRAFT_PART_INSTALL install
+      make RUNTIME=net5 DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
+      make RUNTIME=net5 DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-appdata
+    build-snaps: [dotnet-sdk/6.0/stable]
     build-packages:
     - curl
     - jq
@@ -163,11 +142,8 @@ parts:
     - liblua5.1-0-dev
     - libopenal-dev
     - libsdl2-dev
-    - mono-complete
-    - nuget
     - unzip
     stage-packages:
-    - ca-certificates-mono
     - libfreetype6
     - libgdiplus
     - libglu1-mesa
@@ -175,6 +151,5 @@ parts:
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
-    - mono-devel
     - mount
     - wget
