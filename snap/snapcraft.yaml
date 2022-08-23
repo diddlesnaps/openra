@@ -121,9 +121,8 @@ parts:
       fi
 
       VERSION="$(curl -L -s https://api.github.com/repos/OpenRA/OpenRA/releases | jq -r '[.[] | select(.prerelease == '"$PLAYTEST"')] | .[0] | .tag_name')"
-      # git checkout "$VERSION"
-      # snapcraftctl set-version "$VERSION"
-      snapcraftctl set-version main
+      git checkout "$VERSION"
+      snapcraftctl set-version "$VERSION"
 
       sed -i 's|^Icon=\(.*\)$|Icon=/usr/local/share/icons/hicolor/128x128/apps/\1.png|;s|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
       sed -i 's@\({BIN_DIR}\|{GAME_INSTALL_DIR}\)@$SNAP/\1@g' packaging/linux/openra.in
