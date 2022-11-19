@@ -13,7 +13,6 @@ jobs:
       matrix:
         architecture:
         - amd64
-        - i386
         - armhf
         - arm64
         playtest:
