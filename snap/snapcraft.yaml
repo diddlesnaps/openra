@@ -79,24 +79,24 @@ apps:
     - wayland
     - x11
 
-  # Not Available yet  
-  # ts:
-  #   command: usr/local/bin/openra-ts
-  #   command-chain: [bin/desktop-launch]
-  #   desktop: usr/local/share/applications/openra-ts.desktop
-  #   plugs:
-  #   - audio-playback
-  #   - avahi-control
-  #   - avahi-observe
-  #   - desktop
-  #   - mount-observe
-  #   - network
-  #   - network-bind
-  #   - opengl
-  #   - pulseaudio
-  #   - removable-media
-  #   - wayland
-  #   - x11
+  # experimental
+  ts:
+    command: usr/bin/openra-ts
+    command-chain: [bin/desktop-launch]
+    common-id: openra-ts.desktop
+    # desktop: usr/share/applications/openra-ts.desktop
+    plugs:
+    - audio-playback
+    - avahi-control
+    - avahi-observe
+    - desktop
+    - mount-observe
+    - network
+    - network-bind
+    - opengl
+    - removable-media
+    - wayland
+    - x11
 
 parts:
   desktop-glib-only:
