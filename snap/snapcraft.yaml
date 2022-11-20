@@ -98,7 +98,24 @@ apps:
     - wayland
     - x11
 
+package-repositories:
+  - type: apt
+    url: https://packages.microsoft.com/ubuntu/22.04/prod
+    key-id: BC528686B50D79E339D3721CEB3E94ADBE1229CF
+    suites: [jammy]
+    components: [main]
+
 parts:
+  set-apt-policy:
+    plugin: nil
+    override-pull: |
+      cat <<'EOF' > /etc/apt/preferences
+      Package: *
+      Pin: origin "packages.microsoft.com"
+      Pin-Priority: 1001
+      EOF
+      apt update && apt-get -y --allow-downgrades dist-upgrade
+
   desktop-glib-only:
     plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -109,9 +126,11 @@ parts:
       - libglib2.0-bin
 
   openra:
-    after: [desktop-glib-only]
+    after: [set-apt-policy, desktop-glib-only]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
+    build-environment:
+      - PATH: /usr/share/dotnet:$PATH
     override-pull: |
       craftctl default
 
@@ -130,21 +149,25 @@ parts:
 
       sed -i -Ee 's@(\{BIN_DIR\}|\{GAME_INSTALL_DIR\})@$SNAP\1@g' packaging/linux/openra.in
       sed -i -e 's|mono {DEBUG} OpenRA.dll|./OpenRA|' packaging/linux/openra.in
-      sed -i -e '3i. $SNAP/etc/profile.d/dotnet.sh' packaging/linux/openra.in
 
       sed -i -Ee 's@(\{BIN_DIR\}|\{GAME_INSTALL_DIR\})@$SNAP\1@g' packaging/linux/openra-server.in
       sed -i -e 's|mono {DEBUG} OpenRA.Server.dll|./OpenRA.Server|' packaging/linux/openra-server.in
-      sed -i -e '3i. $SNAP/etc/profile.d/dotnet.sh' packaging/linux/openra-server.in
 
-      sed -i -e 's|--self-contained true|--self-contained false|' packaging/functions.sh
-      sed -i -e 's|-r "\${TARGETPLATFORM}"\s*||' packaging/functions.sh
       sed -i -Ee 's|(for SIZE in 16x16 32x32 48x48 64x64 128x128)(; do)|\1 256x256 512x512 1024x1024\2|' packaging/functions.sh
     override-build: |
+      case $SNAPCRAFT_TARGET_ARCH in
+        amd64)
+          TARGET_PLATFORM=linux-x64 ;;
+        armhf)
+          TARGET_PLATFORM=linux-arm ;;
+        arm64)
+          TARGET_PLATFORM=linux-arm64 ;;
+      esac
       make version
-      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL all
-      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL install
-      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-shortcuts
-      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL install-linux-appdata
+      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM all
+      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM install
+      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM install-linux-shortcuts
+      make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM install-linux-appdata
 
       # Tiberian Sun
       sed -e 's/{DEBUG}/--debug/' -e "s|{GAME_INSTALL_DIR}|/usr/lib/openra|" -e "s|{BIN_DIR}|/usr/bin|" -e "s/{MODID}/ts/g" -e "s/{TAG}/$(shell head -n1 VERSION)/g" -e "s/{MODNAME}/Tiberian Sun/g" "packaging/linux/openra.in" > "packaging/linux/openra-ts"
@@ -154,7 +177,7 @@ parts:
       cp -r "mods/ts" "$SNAPCRAFT_PART_INSTALL/usr/lib/openra/mods/"
     build-packages:
     - curl
-    - dotnet6
+    - dotnet-sdk-6.0
     - jq
     - libfreetype6-dev
     - libglvnd-dev
@@ -163,11 +186,11 @@ parts:
     - libsdl2-dev
     - unzip
     stage-packages:
-    - dotnet-runtime-6.0
     - libdrm-common
     - libfreetype6
     - libgl1
     - libgl1-mesa-dri
+    - liblttng-ust1
     - liblua5.1-0
     - libopenal1
     - libsdl2-2.0-0
