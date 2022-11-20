@@ -98,23 +98,13 @@ apps:
     - wayland
     - x11
 
-package-repositories:
-  - type: apt
-    url: https://packages.microsoft.com/ubuntu/22.04/prod
-    key-id: BC528686B50D79E339D3721CEB3E94ADBE1229CF
-    suites: [jammy]
-    components: [main]
-
 parts:
-  set-apt-policy:
+  install-dotnet:
     plugin: nil
     override-pull: |
-      cat <<'EOF' > /etc/apt/preferences
-      Package: *
-      Pin: origin "packages.microsoft.com"
-      Pin-Priority: 1001
-      EOF
-      apt update && apt-get -y --allow-downgrades dist-upgrade
+      curl -LO https://dot.net/v1/dotnet-install.sh
+      chmod +x dotnet-install.sh
+      ./dotnet-install.sh --channel LTS
 
   desktop-glib-only:
     plugin: make
@@ -126,11 +116,12 @@ parts:
       - libglib2.0-bin
 
   openra:
-    after: [set-apt-policy, desktop-glib-only]
+    after: [install-dotnet, desktop-glib-only]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
     build-environment:
-      - PATH: /usr/share/dotnet:$PATH
+      - PATH: $HOME/.dotnet:$PATH
+      - DOTNET_ROOT: $HOME/.dotnet
     override-pull: |
       craftctl default
 
@@ -177,7 +168,7 @@ parts:
       cp -r "mods/ts" "$SNAPCRAFT_PART_INSTALL/usr/lib/openra/mods/"
     build-packages:
     - curl
-    - dotnet-sdk-6.0
+    # - dotnet-sdk-6.0
     - jq
     - libfreetype6-dev
     - libglvnd-dev
