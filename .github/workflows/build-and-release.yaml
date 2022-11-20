@@ -8,23 +8,26 @@ on:
 
 jobs:
   build-and-release-stable:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.architecture.runner }}
     strategy:
       matrix:
         architecture:
-        - amd64
-        - armhf
-        - arm64
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: armhf
+          runner: [self-hosted, linux, ARM64]
+        - arch: arm64
+          runner: [self-hosted, linux, ARM64]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: Build
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        architecture: ${{ matrix.architecture }}
+        architecture: ${{ ${{ matrix.architecture.arch }} }}
     - name: Review
       uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
@@ -39,25 +42,28 @@ jobs:
         release: beta
 
   build-and-release-playtest:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.architecture.runner }}
     strategy:
       matrix:
         architecture:
-        - amd64
-        - armhf
-        - arm64
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: armhf
+          runner: [self-hosted, linux, ARM64]
+        - arch: arm64
+          runner: [self-hosted, linux, ARM64]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: Set playtest=true
       run: echo 'PLAYTEST="true"' > build-type
     - name: Build
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        architecture: ${{ matrix.architecture }}
+        architecture: ${{ ${{ matrix.architecture.arch }} }}
     - name: Review
       uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
