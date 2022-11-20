@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-release:
+  build-and-release-stable:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -15,17 +15,11 @@ jobs:
         - amd64
         - armhf
         - arm64
-        playtest:
-        - true
-        - false
-    continue-on-error: ${{ matrix.playtest }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
-    - name: Set playtest=${{ matrix.playtest }}
-      run: echo 'PLAYTEST="${{ matrix.playtest }}"' > build-type
     - name: Build
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
@@ -43,6 +37,32 @@ jobs:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
         release: beta
+
+  build-and-release-playtest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture:
+        - amd64
+        - armhf
+        - arm64
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set playtest=true
+      run: echo 'PLAYTEST="true"' > build-type
+    - name: Build
+      id: build
+      uses: diddlesnaps/snapcraft-multiarch-action@v1
+      with:
+        architecture: ${{ matrix.architecture }}
+    - name: Review
+      uses: diddlesnaps/snapcraft-review-tools-action@v1
+      with:
+        snap: ${{ steps.build.outputs.snap }}
+        isClassic: 'false'
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
       if: matrix.playtest == true
