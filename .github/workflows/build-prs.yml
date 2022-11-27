@@ -31,6 +31,7 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         architecture: ${{ matrix.architecture.arch }}
+        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Review
       uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
