@@ -28,6 +28,7 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         architecture: ${{ matrix.architecture.arch }}
+        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Publish release to Beta
       uses: snapcore/action-publish@v1
       if: matrix.playtest == false
@@ -59,6 +60,7 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         architecture: ${{ matrix.architecture.arch }}
+        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
       if: matrix.playtest == true
