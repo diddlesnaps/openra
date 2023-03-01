@@ -19,7 +19,6 @@ jobs:
         playtest:
         - 'true'
         - 'false'
-    allow-failure: ${{ contains(matrix.architecture.arch, 'arm') }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
