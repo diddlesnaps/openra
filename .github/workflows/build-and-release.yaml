@@ -31,8 +31,9 @@ jobs:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Publish release to Beta
       uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
       with:
-        store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
         release: beta
 
@@ -62,7 +63,8 @@ jobs:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
       with:
-        store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
         release: edge
