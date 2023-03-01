@@ -5,29 +5,35 @@ on:
 
 jobs:
   snapcraft-build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.architecture.runner }}
     strategy:
+      fail-fast: false
       matrix:
         architecture:
-        - amd64
-        - armhf
-        - arm64
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: armhf
+          runner: [self-hosted, linux, ARM64]
+        - arch: arm64
+          runner: [self-hosted, linux, ARM64]
         playtest:
         - 'true'
         - 'false'
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: Set playtest=${{ matrix.playtest }}
       run: echo 'PLAYTEST=${{ matrix.playtest }}' > build-type
     - name: Build
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        architecture: ${{ matrix.architecture }}
+        architecture: ${{ matrix.architecture.arch }}
+        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Review
+      if: matrix.architecture.arch == 'amd64'
       uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
         snap: ${{ steps.build.outputs.snap }}

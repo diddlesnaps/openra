@@ -7,35 +7,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
+  build-and-release-stable:
+    runs-on: ${{ matrix.architecture.runner }}
     strategy:
       matrix:
         architecture:
-        - amd64
-        - armhf
-        - arm64
-        playtest:
-        - true
-        - false
-    continue-on-error: ${{ matrix.playtest }}
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: armhf
+          runner: [self-hosted, linux, ARM64]
+        - arch: arm64
+          runner: [self-hosted, linux, ARM64]
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
-    - name: Set playtest=${{ matrix.playtest }}
-      run: echo 'PLAYTEST="${{ matrix.playtest }}"' > build-type
+      uses: docker/setup-qemu-action@v2
     - name: Build
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        architecture: ${{ matrix.architecture }}
-    - name: Review
-      uses: diddlesnaps/snapcraft-review-tools-action@v1
-      with:
-        snap: ${{ steps.build.outputs.snap }}
-        isClassic: 'false'
+        architecture: ${{ ${{ matrix.architecture.arch }} }}
     - name: Publish release to Beta
       uses: snapcore/action-publish@v1
       if: matrix.playtest == false
@@ -43,6 +35,30 @@ jobs:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}
         release: beta
+
+  build-and-release-playtest:
+    runs-on: ${{ matrix.architecture.runner }}
+    strategy:
+      matrix:
+        architecture:
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: armhf
+          runner: [self-hosted, linux, ARM64]
+        - arch: arm64
+          runner: [self-hosted, linux, ARM64]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set playtest=true
+      run: echo 'PLAYTEST="true"' > build-type
+    - name: Build
+      id: build
+      uses: diddlesnaps/snapcraft-multiarch-action@v1
+      with:
+        architecture: ${{ ${{ matrix.architecture.arch }} }}
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
       if: matrix.playtest == true
