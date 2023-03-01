@@ -27,7 +27,7 @@ jobs:
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        architecture: ${{ ${{ matrix.architecture.arch }} }}
+        architecture: ${{ matrix.architecture.arch }}
     - name: Publish release to Beta
       uses: snapcore/action-publish@v1
       if: matrix.playtest == false
@@ -58,7 +58,7 @@ jobs:
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        architecture: ${{ ${{ matrix.architecture.arch }} }}
+        architecture: ${{ matrix.architecture.arch }}
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
       if: matrix.playtest == true
