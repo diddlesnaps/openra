@@ -33,6 +33,7 @@ jobs:
         architecture: ${{ matrix.architecture.arch }}
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Review
+      if: matrix.architecture.arch == 'amd64'
       uses: diddlesnaps/snapcraft-review-tools-action@v1
       with:
         snap: ${{ steps.build.outputs.snap }}

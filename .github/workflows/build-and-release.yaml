@@ -28,11 +28,6 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         architecture: ${{ ${{ matrix.architecture.arch }} }}
-    - name: Review
-      uses: diddlesnaps/snapcraft-review-tools-action@v1
-      with:
-        snap: ${{ steps.build.outputs.snap }}
-        isClassic: 'false'
     - name: Publish release to Beta
       uses: snapcore/action-publish@v1
       if: matrix.playtest == false
@@ -64,11 +59,6 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         architecture: ${{ ${{ matrix.architecture.arch }} }}
-    - name: Review
-      uses: diddlesnaps/snapcraft-review-tools-action@v1
-      with:
-        snap: ${{ steps.build.outputs.snap }}
-        isClassic: 'false'
     - name: Publish playtest to Edge
       uses: snapcore/action-publish@v1
       if: matrix.playtest == true
