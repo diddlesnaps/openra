@@ -34,7 +34,7 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
-        store-login: ${{ secrets.STORE_LOGIN }}
+        store-auth: ${{ secrets.STORE_LOGIN }}
         snapcraft-args: upload --release=beta
 
   build-and-release-playtest:
@@ -66,5 +66,5 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
-        store-login: ${{ secrets.STORE_LOGIN }}
+        store-auth: ${{ secrets.STORE_LOGIN }}
         snapcraft-args: upload --release=edge
