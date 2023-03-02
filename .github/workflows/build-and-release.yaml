@@ -30,12 +30,12 @@ jobs:
         architecture: ${{ matrix.architecture.arch }}
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
     - name: Publish release to Beta
-      uses: snapcore/action-publish@v1
-      env:
-        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+      id: release
+      uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        snap: ${{ steps.build.outputs.snap }}
-        release: beta
+        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
+        store-login: ${{ secrets.STORE_LOGIN }}
+        snapcraft-args: push --release=beta
 
   build-and-release-playtest:
     runs-on: ${{ matrix.architecture.runner }}
@@ -61,10 +61,10 @@ jobs:
       with:
         architecture: ${{ matrix.architecture.arch }}
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
-    - name: Publish playtest to Edge
-      uses: snapcore/action-publish@v1
-      env:
-        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+    - name: Publish release to Edge
+      id: release
+      uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
-        snap: ${{ steps.build.outputs.snap }}
-        release: edge
+        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
+        store-login: ${{ secrets.STORE_LOGIN }}
+        snapcraft-args: push --release=edge
