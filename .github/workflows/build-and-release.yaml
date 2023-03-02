@@ -35,7 +35,7 @@ jobs:
       with:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
         store-login: ${{ secrets.STORE_LOGIN }}
-        snapcraft-args: push --release=beta
+        snapcraft-args: upload --release=beta
 
   build-and-release-playtest:
     runs-on: ${{ matrix.architecture.runner }}
@@ -67,4 +67,4 @@ jobs:
       with:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
         store-login: ${{ secrets.STORE_LOGIN }}
-        snapcraft-args: push --release=edge
+        snapcraft-args: upload --release=edge
