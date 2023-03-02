@@ -29,13 +29,16 @@ jobs:
       with:
         architecture: ${{ matrix.architecture.arch }}
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
+    - name: Massage the snap name
+      id: snap-name
+      run: echo "snap=$(echo ${{ steps.build.outputs.snap }} | sed -Ee 's@^${{ GITHUB_WORKSPACE }}/?@@')" >> "$GITHUB_OUTPUT"
     - name: Publish release to Beta
       id: release
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
         store-auth: ${{ secrets.STORE_LOGIN }}
-        snapcraft-args: upload --release=beta ${{ steps.build.outputs.snap }}
+        snapcraft-args: upload --release=beta ${{ steps.snap-name.outputs.snap }}
 
   build-and-release-playtest:
     runs-on: ${{ matrix.architecture.runner }}
@@ -61,10 +64,13 @@ jobs:
       with:
         architecture: ${{ matrix.architecture.arch }}
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
+    - name: Massage the snap name
+      id: snap-name
+      run: echo "snap=$(echo ${{ steps.build.outputs.snap }} | sed -Ee 's@^${{ GITHUB_WORKSPACE }}/?@@')" >> "$GITHUB_OUTPUT"
     - name: Publish release to Edge
       id: release
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
         store-auth: ${{ secrets.STORE_LOGIN }}
-        snapcraft-args: upload --release=edge ${{ steps.build.outputs.snap }}
+        snapcraft-args: upload --release=edge ${{ steps.snap-name.outputs.snap }}
