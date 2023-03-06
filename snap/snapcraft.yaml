@@ -135,6 +135,8 @@ parts:
       git checkout "$VERSION"
       craftctl set version="$VERSION"
 
+      echo "$VERSION" > VERSION
+
       sed -i -Ee 's|^Icon=(.*)$|Icon=/usr/share/icons/hicolor/1024x1024/apps/\1.png|' packaging/linux/openra.desktop.in
       sed -i -e 's|^Exec=|Exec=openra.{MOD}|' packaging/linux/openra.desktop.in
 
@@ -154,7 +156,7 @@ parts:
         arm64)
           TARGET_PLATFORM=linux-arm64 ;;
       esac
-      make version
+      make VERSION=$(cat VERSION) version
       make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM all
       make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM install
       make RUNTIME=net6 prefix=/usr DESTDIR=$SNAPCRAFT_PART_INSTALL TARGETPLATFORM=$TARGET_PLATFORM install-linux-shortcuts
