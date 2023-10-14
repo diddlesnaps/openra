@@ -10,24 +10,19 @@ confinement: strict
 base: core22
 compression: lzo
 
-assumes:
-  - command-chain
-
 architectures:
 - build-on: amd64
 - build-on: armhf
 - build-on: arm64
 
 layout:
-  /usr/lib/dotnet:
-    bind: $SNAP/usr/lib/dotnet
   /usr/share/libdrm:
     bind: $SNAP/usr/share/libdrm
 
 apps:
   cnc:
+    extensions: [gnome]
     command: usr/bin/openra-cnc
-    command-chain: [bin/desktop-launch]
     common-id: openra-cnc.desktop
     desktop: usr/share/applications/openra-cnc.desktop
     plugs:
@@ -44,8 +39,8 @@ apps:
     - x11
 
   d2k:
+    extensions: [gnome]
     command: usr/bin/openra-d2k
-    command-chain: [bin/desktop-launch]
     common-id: openra-d2k.desktop
     desktop: usr/share/applications/openra-d2k.desktop
     plugs:
@@ -62,8 +57,8 @@ apps:
     - x11
 
   ra:
+    extensions: [gnome]
     command: usr/bin/openra-ra
-    command-chain: [bin/desktop-launch]
     common-id: openra-ra.desktop
     desktop: usr/share/applications/openra-ra.desktop
     plugs:
@@ -82,7 +77,6 @@ apps:
   # experimental
   ts:
     command: usr/bin/openra-ts
-    command-chain: [bin/desktop-launch]
     common-id: openra-ts.desktop
     # desktop: usr/share/applications/openra-ts.desktop
     plugs:
@@ -106,17 +100,8 @@ parts:
       chmod +x dotnet-install.sh
       ./dotnet-install.sh --channel LTS
 
-  desktop-glib-only:
-    plugin: make
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: glib-only
-    build-packages:
-      - libglib2.0-dev
-    stage-packages:
-      - libglib2.0-bin
-
   openra:
-    after: [install-dotnet, desktop-glib-only]
+    after: [install-dotnet]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
     build-environment:
@@ -173,16 +158,12 @@ parts:
     # - dotnet-sdk-6.0
     - jq
     - libfreetype6-dev
-    - libglvnd-dev
     - liblua5.1-0-dev
     - libopenal-dev
     - libsdl2-dev
     - unzip
     stage-packages:
-    - libdrm-common
     - libfreetype6
-    - libgl1
-    - libgl1-mesa-dri
     - liblttng-ust1
     - liblua5.1-0
     - libopenal1
