@@ -76,9 +76,9 @@ apps:
 
   # experimental
   ts:
+    extensions: [gnome]
     command: usr/bin/openra-ts
     common-id: openra-ts.desktop
-    # desktop: usr/share/applications/openra-ts.desktop
     plugs:
     - audio-playback
     - avahi-control
@@ -164,6 +164,7 @@ parts:
     - unzip
     stage-packages:
     - libfreetype6
+    - libicu70
     - liblttng-ust1
     - liblua5.1-0
     - libopenal1
