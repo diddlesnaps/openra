@@ -13,16 +13,14 @@ jobs:
       matrix:
         architecture:
         - arch: amd64
-          runner: ubuntu-latest
+          runner: ubuntu-24.04
         - arch: armhf
-          runner: [self-hosted, linux, ARM64]
+          runner: ubuntu-24.04-arm
         - arch: arm64
-          runner: [self-hosted, linux, ARM64]
+          runner: ubuntu-24.04-arm
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
     - name: Build
       id: build
       uses: diddlesnaps/snapcraft-multiarch-action@v1
@@ -46,16 +44,14 @@ jobs:
       matrix:
         architecture:
         - arch: amd64
-          runner: ubuntu-latest
+          runner: ubuntu-24.04
         - arch: armhf
-          runner: [self-hosted, linux, ARM64]
+          runner: ubuntu-24.04-arm
         - arch: arm64
-          runner: [self-hosted, linux, ARM64]
+          runner: ubuntu-24.04-arm
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
     - name: Set playtest=true
       run: echo 'PLAYTEST="true"' > build-type
     - name: Build
