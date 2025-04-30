@@ -29,7 +29,7 @@ jobs:
       uses: diddlesnaps/snapcraft-multiarch-action@v1
       with:
         architecture: ${{ matrix.architecture.arch }}
-        use-podman: ${{ contains(matrix.architecture.runner, 'self-hosted') }}
+        use-podman: 'true'
     - name: Review
       if: matrix.architecture.arch == 'amd64'
       uses: diddlesnaps/snapcraft-review-tools-action@v1
