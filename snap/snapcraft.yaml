@@ -93,15 +93,33 @@ apps:
     - x11
 
 parts:
-  install-dotnet:
+  dependencies:
     plugin: nil
     override-pull: |
       curl -LO https://dot.net/v1/dotnet-install.sh
       chmod +x dotnet-install.sh
       ./dotnet-install.sh --channel LTS
+    build-packages:
+    - curl
+    # - dotnet-sdk-6.0
+    - jq
+    - libfreetype6-dev
+    - liblua5.1-0-dev
+    - libopenal-dev
+    - libsdl2-dev
+    - unzip
+    stage-packages:
+    - libfreetype6
+    - libicu70
+    - liblttng-ust1
+    - liblua5.1-0
+    - libopenal1
+    - libsdl2-2.0-0
+    - mount
+    - wget
 
   openra:
-    after: [install-dotnet]
+    after: [dependencies]
     plugin: make
     source: https://github.com/OpenRA/OpenRA.git
     build-environment:
@@ -153,21 +171,3 @@ parts:
       install -m755 "packaging/linux/openra-ts" "$SNAPCRAFT_PART_INSTALL/usr/bin"
       install -m755 "packaging/linux/openra-ts-server" "$SNAPCRAFT_PART_INSTALL/usr/bin"
       cp -r "mods/ts" "$SNAPCRAFT_PART_INSTALL/usr/lib/openra/mods/"
-    build-packages:
-    - curl
-    # - dotnet-sdk-6.0
-    - jq
-    - libfreetype6-dev
-    - liblua5.1-0-dev
-    - libopenal-dev
-    - libsdl2-dev
-    - unzip
-    stage-packages:
-    - libfreetype6
-    - libicu70
-    - liblttng-ust1
-    - liblua5.1-0
-    - libopenal1
-    - libsdl2-2.0-0
-    - mount
-    - wget
